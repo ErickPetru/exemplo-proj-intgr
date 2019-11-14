@@ -70,10 +70,10 @@ export default {
     },
 
     excluir (item) {
-      let usuarios = this.$ls.get('usuarios')
-      usuarios = usuarios.filter(u => u.id != item.id)
-      this.$ls.set('usuarios', usuarios)
-      this.usuarios = usuarios
+      let dados = this.$ls.get('usuarios')
+      dados = dados.filter(u => u.id != item.id)
+      this.$ls.set('usuarios', dados)
+      this.usuarios = dados
     }
   }
 }

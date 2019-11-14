@@ -1,30 +1,27 @@
 <template>
   <v-container>
-    <v-form
-      ref="form"
-      v-model="valid"
-    >
+    <v-form v-model="valid">
       <v-card>
         <v-card-title>{{ modo }} usuário</v-card-title>
         <v-card-text>
           <v-text-field
             v-model="nome"
             :counter="50"
-            :rules="nomeValidacao"
+            :rules="nomeRegras"
             label="Nome completo"
             required />
 
           <v-text-field
             v-model="apelido"
             :counter="15"
-            :rules="apelidoValidacao"
+            :rules="apelidoRegras"
             label="Apelido"
             required />
 
           <v-text-field
             v-model="email"
             :counter="100"
-            :rules="emailValidacao"
+            :rules="emailRegras"
             label="E-mail"
             autocomplete="new-password"
             required />
@@ -57,22 +54,22 @@
 export default {
   data () {
     return {
-      valid: true,
       id: this.$route.params.id,
       modo: this.$route.params.id == 'incluir' ? 'Incluir' : 'Editar',
       nome: '',
       apelido: '',
       email: '',
       senha: '',
-      nomeValidacao: [
+      valid: true,
+      nomeRegras: [
         v => !!v || 'Nome completo é obrigatório',
         v => (v && v.length <= 50) || 'Nome completo deve ter no máximo 50 caracteres'
       ],
-      apelidoValidacao: [
+      apelidoRegras: [
         v => !!v || 'Apelido é obrigatório',
         v => (v && v.length <= 15) || 'Apelido deve ter no máximo 15 caracteres'
       ],
-      emailValidacao: [
+      emailRegras: [
         v => !!v || 'E-mail é obrigatório',
         v => (v && v.length <= 100) || 'E-mail deve ter no máximo 100 caracteres',
         v => /.+@.+\..+/.test(v) || 'E-mail deve ter um formato válido'
@@ -98,17 +95,15 @@ export default {
 
   methods: {
     gerarId () {
-      return ([1e7]+-1e3+-4e3+-8e3+-1e11).replace(/[018]/g, c =>
-        (c ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> c / 4).toString(16)
-      );
+      return Math.round(Math.random() * 9999)
     },
 
     salvar () {
-      const usuarios = this.$ls.get('usuarios')
-      if (!usuarios) usuarios = []
+      let dados = this.$ls.get('usuarios')
+      if (!dados) dados = []
 
       if (this.modo == 'Incluir') {
-        usuarios.push({
+        dados.push({
           id: this.gerarId(),
           nome: this.nome,
           apelido: this.apelido,
@@ -116,13 +111,13 @@ export default {
           senha: this.senha
         })
       } else {
-        const i = usuarios.findIndex(u => u.id == this.id)
-        usuarios[i].nome = this.nome
-        usuarios[i].apelido = this.apelido
-        usuarios[i].email = this.email
+        const i = dados.findIndex(u => u.id == this.id)
+        dados[i].nome = this.nome
+        dados[i].apelido = this.apelido
+        dados[i].email = this.email
       }
 
-      this.$ls.set('usuarios', usuarios)
+      this.$ls.set('usuarios', dados)
       this.$router.push('/admin/usuarios')
     },
 
